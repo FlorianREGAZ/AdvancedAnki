@@ -178,73 +178,78 @@ export default function ProjectPage() {
                 key={project.id}
                 className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {project.name}
-                      </h3>
+                <Link href={`/project/${project.id}`} className="block">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2">
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          {project.name}
+                        </h3>
+                      </div>
+                      <p className="text-gray-600">{project.new_cards + project.learning_cards + project.due_cards} cards due today</p>
                     </div>
-                    <p className="text-gray-600">{project.new_cards + project.learning_cards + project.due_cards} cards due today</p>
+                    {(project.new_cards > 0 || project.learning_cards > 0 || project.due_cards > 0) && (
+                      <div className="text-right">
+                        <p className="text-gray-900 font-medium">
+                          {project.total_cards} cards
+                        </p>
+                      </div>
+                    )}
                   </div>
+
                   {(project.new_cards > 0 || project.learning_cards > 0 || project.due_cards > 0) && (
-                    <div className="text-right">
-                      <p className="text-gray-900 font-medium">
-                        {project.total_cards} cards
-                      </p>
+                    <div className="mt-4 mb-6">
+                      <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden">
+                        {project.new_cards > 0 && (
+                          <div 
+                            className="h-full bg-blue-500"
+                            style={{ 
+                              width: `${(project.new_cards / project.total_cards) * 100}%`,
+                            }}
+                          />
+                        )}
+                        {project.learning_cards > 0 && (
+                          <div 
+                            className="h-full bg-orange-500"
+                            style={{ 
+                              width: `${(project.learning_cards / project.total_cards) * 100}%`,
+                            }}
+                          />
+                        )}
+                        {project.due_cards > 0 && (
+                          <div 
+                            className="h-full bg-green-500"
+                            style={{ 
+                              width: `${(project.due_cards / project.total_cards) * 100}%`,
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <span>New ({project.new_cards})</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          <span>Learn ({project.learning_cards})</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span>Due ({project.due_cards})</span>
+                        </div>
+                      </div>
                     </div>
                   )}
-                </div>
-
-                {(project.new_cards > 0 || project.learning_cards > 0 || project.due_cards > 0) && (
-                  <div className="mt-4 mb-6">
-                    <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden">
-                      {project.new_cards > 0 && (
-                        <div 
-                          className="h-full bg-blue-500"
-                          style={{ 
-                            width: `${(project.new_cards / project.total_cards) * 100}%`,
-                          }}
-                        />
-                      )}
-                      {project.learning_cards > 0 && (
-                        <div 
-                          className="h-full bg-orange-500"
-                          style={{ 
-                            width: `${(project.learning_cards / project.total_cards) * 100}%`,
-                          }}
-                        />
-                      )}
-                      {project.due_cards > 0 && (
-                        <div 
-                          className="h-full bg-green-500"
-                          style={{ 
-                            width: `${(project.due_cards / project.total_cards) * 100}%`,
-                          }}
-                        />
-                      )}
-                    </div>
-                    <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span>New ({project.new_cards})</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                        <span>Learn ({project.learning_cards})</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Due ({project.due_cards})</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </Link>
 
                 <div className="flex gap-3">
-                  <button className="flex-1 py-2 text-gray-700 hover:bg-gray-100 rounded-md text-center">
+                  <Link 
+                    href={`/project/${project.id}`}
+                    className="flex-1 py-2 text-gray-700 hover:bg-gray-100 rounded-md text-center"
+                  >
                     Browse
-                  </button>
+                  </Link>
                   <button className="flex-1 py-2 bg-black text-white rounded-md hover:bg-gray-800 text-center">
                     Study Now
                   </button>
