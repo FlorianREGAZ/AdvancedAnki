@@ -48,3 +48,14 @@ export interface CreateSetModalProps {
   onClose: () => void;
   onSubmit: (title: string) => void;
 } 
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  total_cards: number;
+  new_cards: number;
+  learning_cards: number;
+  due_cards: number;
+  created_at: string;
+}
