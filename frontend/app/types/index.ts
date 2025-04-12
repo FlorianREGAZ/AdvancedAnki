@@ -2,6 +2,7 @@ export interface FlashcardSet {
   id: string;
   title: string;
   cardCount: number;
+  created_at: string;
 }
 
 export interface FlashcardData {

@@ -7,27 +7,14 @@ import { supabase } from "../../lib/supabase";
 import Flashcard from "../../components/Flashcard";
 import FlashcardSets from "../../components/FlashcardSets";
 import CreateSetModal from "../../components/CreateSetModal";
-import { FlashcardSet, FlashcardData } from "../../types";
-
-interface Deck {
-  id: string;
-  name: string;
-  created_at: string;
-  flashcard_count: number;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-}
+import { FlashcardSet, FlashcardData, Project } from "../../types";
 
 export default function ProjectPage() {
   const params = useParams();
   const projectId = params.project_id as string;
 
   const [project, setProject] = useState<Project | null>(null);
-  const [decks, setDecks] = useState<Deck[]>([]);
+  const [decks, setDecks] = useState<FlashcardSet[]>([]);
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
   const [cards, setCards] = useState<FlashcardData[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -63,8 +50,10 @@ export default function ProjectPage() {
         if (decksError) throw decksError;
         
         const formattedDecks = decksData.map(deck => ({
-          ...deck,
-          flashcard_count: deck.flashcard_count[0]?.count || 0
+          id: deck.id,
+          title: deck.name,
+          cardCount: deck.flashcard_count[0]?.count || 0,
+          created_at: deck.created_at
         }));
         
         setDecks(formattedDecks);
@@ -143,9 +132,9 @@ export default function ProjectPage() {
       if (data) {
         const newDeck = {
           id: data[0].id,
-          name: data[0].name,
-          created_at: data[0].created_at,
-          flashcard_count: 0,
+          title: data[0].name,
+          cardCount: 0,
+          created_at: data[0].created_at
         };
         setDecks(prev => [...prev, newDeck]);
         setSelectedDeck(newDeck.id);
@@ -221,11 +210,7 @@ export default function ProjectPage() {
 
         <div className="flex space-x-8">
           <FlashcardSets
-            sets={decks.map(deck => ({
-              id: deck.id,
-              title: deck.name,
-              cardCount: deck.flashcard_count,
-            }))}
+            sets={decks}
             selectedSet={selectedDeck}
             onSelectSet={setSelectedDeck}
             onCreateSet={handleCreateSet}
