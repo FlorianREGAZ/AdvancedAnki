@@ -12,7 +12,8 @@ export default function Flashcard({
   currentCard,
   totalCards,
   onDifficulty,
-}: FlashcardProps) {
+  onEdit
+}: Partial<Omit<FlashcardProps, 'question' | 'answer'>> & Pick<FlashcardProps, 'question' | 'answer'>) {
   const difficultyOptions: DifficultyOption[] = [
     {
       label: 'Again',
@@ -40,27 +41,31 @@ export default function Flashcard({
     <div className="bg-white rounded-lg border border-gray-200 p-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-semibold mb-2">{question}</h2>
-        <p className="text-gray-600">Card {currentCard} of {totalCards}</p>
+        {currentCard && totalCards && (
+          <p className="text-gray-600">Card {currentCard} of {totalCards}</p>
+        )}
       </div>
 
       <div className="bg-white rounded-lg p-8 mb-8 min-h-[200px] flex items-center justify-center border border-gray-100">
         <p className="text-lg text-center">{answer}</p>
       </div>
 
-      <div className="flex justify-center space-x-4">
-        {difficultyOptions.map((option) => (
-          <button 
-            key={option.label}
-            onClick={() => onDifficulty(option.label)}
-            className={`group relative px-6 py-2 border rounded-md ${option.className}`}
-          >
-            <span>{option.label}</span>
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-              {option.nextReview}
-            </div>
-          </button>
-        ))}
-      </div>
+      {onDifficulty && (
+        <div className="flex justify-center space-x-4">
+          {difficultyOptions.map((option) => (
+            <button 
+              key={option.label}
+              onClick={() => onDifficulty(option.label)}
+              className={`group relative px-6 py-2 border rounded-md ${option.className}`}
+            >
+              <span>{option.label}</span>
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                {option.nextReview}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 } 
