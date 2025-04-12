@@ -72,6 +72,10 @@ export default function ProjectPage() {
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
+        if (decks.length === 0) {
+          return;
+        }
+
         const { data, error } = await supabase
           .from('flashcards')
           .select(`
@@ -256,7 +260,7 @@ export default function ProjectPage() {
                 <p className="text-gray-600">
                   {selectedDeck 
                     ? "No cards in this deck"
-                    : "Select a deck to view cards"}
+                    : decks.length === 0 ? "No flashcards in this project" : "Select a deck to view cards"}
                 </p>
               </div>
             )}
