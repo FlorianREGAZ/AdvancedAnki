@@ -39,14 +39,27 @@ export default function ProjectPage() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
+        
+        // TODO: Remove this once we have the real data
+        var updatedData = data.map((project) => {
+          if (project.name === "Language Learning") {
+            return {
+              ...project,
+              new_cards: 3,
+              learning_cards: 5,
+              due_cards: 4,
+              total_cards: 30,
+            };
+          }
 
-        var updatedData = data.map((project) => ({
-          ...project,
-          new_cards: 2,
-          learning_cards: 5,
-          due_cards: 6,
-          total_cards: 30,
-        }));
+          return {
+              ...project,
+              new_cards: 0,
+              learning_cards: 0,
+              due_cards: 0,
+              total_cards: 0,
+            };;
+        });
 
         setProjects(updatedData);
       } catch (err) {
@@ -194,59 +207,61 @@ export default function ProjectPage() {
                         </div>
                         <p className="text-gray-600">{project.new_cards + project.learning_cards + project.due_cards} cards due today</p>
                       </div>
-                      {(project.new_cards > 0 || project.learning_cards > 0 || project.due_cards > 0) && (
-                        <div className="text-right">
-                          <p className="text-gray-900 font-medium">
-                            {project.total_cards} cards
-                          </p>
-                        </div>
-                      )}
+                      <div className="text-right">
+                        <p className="text-gray-900 font-medium">
+                          {project.total_cards} cards
+                        </p>
+                      </div>
                     </div>
 
-                    {(project.new_cards > 0 || project.learning_cards > 0 || project.due_cards > 0) && (
-                      <div className="mt-4 mb-6">
-                        <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden">
-                          {project.new_cards > 0 && (
-                            <div 
-                              className="h-full bg-blue-500"
-                              style={{ 
-                                width: `${(project.new_cards / project.total_cards) * 100}%`,
-                              }}
-                            />
-                          )}
-                          {project.learning_cards > 0 && (
-                            <div 
-                              className="h-full bg-orange-500"
-                              style={{ 
-                                width: `${(project.learning_cards / project.total_cards) * 100}%`,
-                              }}
-                            />
-                          )}
-                          {project.due_cards > 0 && (
-                            <div 
-                              className="h-full bg-green-500"
-                              style={{ 
-                                width: `${(project.due_cards / project.total_cards) * 100}%`,
-                              }}
-                            />
-                          )}
+                    <div className="mt-4 mb-6">
+                      <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden">
+                        {project.total_cards > 0 ? (
+                          <>
+                            {project.new_cards > 0 && (
+                              <div 
+                                className="h-full bg-blue-500"
+                                style={{ 
+                                  width: `${(project.new_cards / project.total_cards) * 100}%`,
+                                }}
+                              />
+                            )}
+                            {project.learning_cards > 0 && (
+                              <div 
+                                className="h-full bg-orange-500"
+                                style={{ 
+                                  width: `${(project.learning_cards / project.total_cards) * 100}%`,
+                                }}
+                              />
+                            )}
+                            {project.due_cards > 0 && (
+                              <div 
+                                className="h-full bg-green-500"
+                                style={{ 
+                                  width: `${(project.due_cards / project.total_cards) * 100}%`,
+                                }}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <div className="h-full bg-gray-100 w-full" />
+                        )}
+                      </div>
+                      <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <span>New ({project.new_cards})</span>
                         </div>
-                        <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span>New ({project.new_cards})</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                            <span>Learn ({project.learning_cards})</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span>Due ({project.due_cards})</span>
-                          </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          <span>Learn ({project.learning_cards})</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span>Due ({project.due_cards})</span>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </Link>
 
                   <div className="flex gap-3">
@@ -303,12 +318,19 @@ export default function ProjectPage() {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={async (name, description) => {
           try {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+              throw new Error('You must be logged in to create a project');
+            }
+
             const { data, error } = await supabase
               .from('projects')
               .insert([
                 {
                   name,
                   description,
+                  user_id: user.id,
                   created_at: new Date().toISOString(),
                 }
               ])
