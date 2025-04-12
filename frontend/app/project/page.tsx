@@ -235,8 +235,8 @@ export default function ProjectPage() {
                   key={project.id}
                   className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <Link href={`/project/${project.id}`} className="block">
-                    <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start">
+                    <Link href={`/project/${project.id}`} className="block flex-1">
                       <div className="space-y-2">
                         <div className="flex items-start gap-2">
                           <h3 className="text-xl font-semibold text-gray-900">
@@ -245,67 +245,67 @@ export default function ProjectPage() {
                         </div>
                         <p className="text-gray-600">{project.new_cards + project.learning_cards + project.due_cards} cards due today</p>
                       </div>
-                      <ProjectMenu
-                        project={project}
-                        onRename={(newName) => handleRenameProject(project.id, newName)}
-                        onDelete={() => handleDeleteProject(project.id)}
-                        onLearn={() => handleLearnProject(project.id)}
-                      />
-                    </div>
+                    </Link>
+                    <ProjectMenu
+                      project={project}
+                      onRename={(newName) => handleRenameProject(project.id, newName)}
+                      onDelete={() => handleDeleteProject(project.id)}
+                      onLearn={() => handleLearnProject(project.id)}
+                    />
+                  </div>
 
-                    <div className="mt-4 mb-6">
-                      <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden">
-                        {project.total_cards > 0 ? (
-                          <>
-                            {project.new_cards > 0 && (
-                              <div 
-                                className="h-full bg-blue-500"
-                                style={{ 
-                                  width: `${(project.new_cards / project.total_cards) * 100}%`,
-                                }}
-                              />
-                            )}
-                            {project.learning_cards > 0 && (
-                              <div 
-                                className="h-full bg-orange-500"
-                                style={{ 
-                                  width: `${(project.learning_cards / project.total_cards) * 100}%`,
-                                }}
-                              />
-                            )}
-                            {project.due_cards > 0 && (
-                              <div 
-                                className="h-full bg-green-500"
-                                style={{ 
-                                  width: `${(project.due_cards / project.total_cards) * 100}%`,
-                                }}
-                              />
-                            )}
-                          </>
-                        ) : (
-                          <div className="h-full bg-gray-100 w-full" />
-                        )}
+                  <div className="mt-4 mb-6">
+                    <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden">
+                      {project.total_cards > 0 ? (
+                        <>
+                          {project.new_cards > 0 && (
+                            <div 
+                              className="h-full bg-blue-500"
+                              style={{ 
+                                width: `${(project.new_cards / project.total_cards) * 100}%`,
+                              }}
+                            />
+                          )}
+                          {project.learning_cards > 0 && (
+                            <div 
+                              className="h-full bg-orange-500"
+                              style={{ 
+                                width: `${(project.learning_cards / project.total_cards) * 100}%`,
+                              }}
+                            />
+                          )}
+                          {project.due_cards > 0 && (
+                            <div 
+                              className="h-full bg-green-500"
+                              style={{ 
+                                width: `${(project.due_cards / project.total_cards) * 100}%`,
+                              }}
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <div className="h-full bg-gray-100 w-full" />
+                      )}
+                    </div>
+                    <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span>New ({project.new_cards})</span>
                       </div>
-                      <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          <span>New ({project.new_cards})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                          <span>Learn ({project.learning_cards})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span>Due ({project.due_cards})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                          <span>Total ({project.total_cards})</span>
-                        </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <span>Learn ({project.learning_cards})</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Due ({project.due_cards})</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <span>Total ({project.total_cards})</span>
                       </div>
                     </div>
-                  </Link>
+                  </div>
 
                   <div className="flex gap-3">
                     <Link 
@@ -356,49 +356,52 @@ export default function ProjectPage() {
         </main>
       </div>
 
-      <CreateProjectModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={async (name, description) => {
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (!user) {
-              throw new Error('You must be logged in to create a project');
+      {/* Create Project Modal */}
+      {isCreateModalOpen && (
+        <CreateProjectModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={async (name, description) => {
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              
+              if (!user) {
+                throw new Error('You must be logged in to create a project');
+              }
+
+              const { data, error } = await supabase
+                .from('projects')
+                .insert([
+                  {
+                    name,
+                    description,
+                    user_id: user.id,
+                    created_at: new Date().toISOString(),
+                  }
+                ])
+                .select();
+
+              if (error) throw error;
+
+              if (data) {
+                const newProject = {
+                  ...data[0],
+                  new_cards: 0,
+                  learning_cards: 0,
+                  due_cards: 0,
+                  total_cards: 0,
+                };
+                setProjects(prev => [...prev, newProject]);
+              }
+
+              setIsCreateModalOpen(false);
+            } catch (err) {
+              console.error('Error creating project:', err);
+              setError(err instanceof Error ? err.message : 'Failed to create project');
             }
-
-            const { data, error } = await supabase
-              .from('projects')
-              .insert([
-                {
-                  name,
-                  description,
-                  user_id: user.id,
-                  created_at: new Date().toISOString(),
-                }
-              ])
-              .select();
-
-            if (error) throw error;
-
-            if (data) {
-              const newProject = {
-                ...data[0],
-                new_cards: 0,
-                learning_cards: 0,
-                due_cards: 0,
-                total_cards: 0,
-              };
-              setProjects(prev => [...prev, newProject]);
-            }
-
-            setIsCreateModalOpen(false);
-          } catch (err) {
-            console.error('Error creating project:', err);
-            setError(err instanceof Error ? err.message : 'Failed to create project');
-          }
-        }}
-      />
+          }}
+        />
+      )}
     </>
   );
-} 
+}

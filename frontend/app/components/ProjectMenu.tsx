@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Modal from "./Modal";
 import { ProjectMenuProps } from "../types";
 
@@ -6,6 +6,20 @@ export default function ProjectMenu({ project, onRename, onDelete, onLearn }: Pr
   const [isOpen, setIsOpen] = useState(false);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [newName, setNewName] = useState(project.name);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleRename = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +30,7 @@ export default function ProjectMenu({ project, onRename, onDelete, onLearn }: Pr
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
