@@ -1,10 +1,14 @@
 import { FlashcardSetsProps } from "../types";
+import DeckMenu from "./DeckMenu";
 
 export default function FlashcardSets({
   sets,
   selectedSet,
   onSelectSet,
   onCreateSet,
+  onRenameSet,
+  onDeleteSet,
+  onLearnSet,
 }: FlashcardSetsProps) {
   return (
     <div className="w-1/3">
@@ -25,11 +29,25 @@ export default function FlashcardSets({
               selectedSet === set.id
                 ? "border-green-500 bg-green-50"
                 : "border-gray-200 hover:border-gray-300"
-            } cursor-pointer`}
-            onClick={() => onSelectSet(set.id)}
+            }`}
           >
-            <h3 className="font-medium">{set.title}</h3>
-            <p className="text-sm text-gray-600">{set.cardCount} cards</p>
+            <div className="flex justify-between items-start">
+              <div 
+                className="flex-1 cursor-pointer"
+                onClick={() => onSelectSet(set.id)}
+              >
+                <h3 className="font-medium">{set.title}</h3>
+                <p className="text-sm text-gray-600">{set.cardCount} cards</p>
+              </div>
+              <div onClick={(e) => e.stopPropagation()}>
+                <DeckMenu
+                  deck={set}
+                  onRename={(newName) => onRenameSet?.(set.id, newName)}
+                  onDelete={() => onDeleteSet?.(set.id)}
+                  onLearn={() => onLearnSet?.(set.id)}
+                />
+              </div>
+            </div>
           </div>
         ))}
       </div>

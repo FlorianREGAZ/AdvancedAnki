@@ -42,6 +42,9 @@ export interface FlashcardSetsProps {
   selectedSet: string | null;
   onSelectSet: (setId: string) => void;
   onCreateSet: () => void;
+  onRenameSet?: (setId: string, newName: string) => void;
+  onDeleteSet?: (setId: string) => void;
+  onLearnSet?: (setId: string) => void;
 }
 
 export interface CreateSetModalProps {

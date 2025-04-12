@@ -151,6 +151,49 @@ export default function ProjectPage() {
     }
   };
 
+  const handleRenameDeck = async (deckId: string, newName: string) => {
+    try {
+      const { error } = await supabase
+        .from('decks')
+        .update({ name: newName })
+        .eq('id', deckId);
+
+      if (error) throw error;
+
+      setDecks(decks.map(deck => 
+        deck.id === deckId ? { ...deck, title: newName } : deck
+      ));
+    } catch (err) {
+      console.error('Error renaming deck:', err);
+      setError(err instanceof Error ? err.message : 'Failed to rename deck');
+    }
+  };
+
+  const handleDeleteDeck = async (deckId: string) => {
+    try {
+      const { error } = await supabase
+        .from('decks')
+        .delete()
+        .eq('id', deckId);
+
+      if (error) throw error;
+
+      setDecks(decks.filter(deck => deck.id !== deckId));
+      if (selectedDeck === deckId) {
+        setSelectedDeck(null);
+      }
+    } catch (err) {
+      console.error('Error deleting deck:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete deck');
+    }
+  };
+
+  const handleLearnDeck = (deckId: string) => {
+    // TODO: Implement learning functionality
+    console.log('Learning deck:', deckId);
+    // You can add navigation or other learning-related functionality here
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
@@ -217,6 +260,9 @@ export default function ProjectPage() {
               setSelectedDeck(currentDeckId => currentDeckId === deckId ? null : deckId);
             }}
             onCreateSet={handleCreateSet}
+            onRenameSet={handleRenameDeck}
+            onDeleteSet={handleDeleteDeck}
+            onLearnSet={handleLearnDeck}
           />
             
           <div className="w-2/3">
