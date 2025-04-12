@@ -103,7 +103,7 @@ export default function ProjectPage() {
     };
 
     fetchFlashcards();
-  }, [selectedDeck, projectId]);
+  }, [decks, selectedDeck, projectId]);
 
   const handlePreviousCard = () => {
     setCurrentCardIndex(current => Math.max(0, current - 1));
