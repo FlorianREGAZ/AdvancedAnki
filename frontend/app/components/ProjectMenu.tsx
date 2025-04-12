@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import Modal from "./Modal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { ProjectMenuProps } from "../types";
 
 export default function ProjectMenu({ project, onRename, onDelete, onLearn }: ProjectMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newName, setNewName] = useState(project.name);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +29,11 @@ export default function ProjectMenu({ project, onRename, onDelete, onLearn }: Pr
       onRename(newName.trim());
       setIsRenameModalOpen(false);
     }
+  };
+
+  const handleDelete = () => {
+    onDelete();
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -64,7 +71,7 @@ export default function ProjectMenu({ project, onRename, onDelete, onLearn }: Pr
           </button>
           <button
             onClick={() => {
-              onDelete();
+              setIsDeleteModalOpen(true);
               setIsOpen(false);
             }}
             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
@@ -104,6 +111,14 @@ export default function ProjectMenu({ project, onRename, onDelete, onLearn }: Pr
           </div>
         </form>
       </Modal>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        itemName={project.name}
+        itemType="Project"
+      />
     </div>
   );
 } 
