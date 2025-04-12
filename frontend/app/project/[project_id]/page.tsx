@@ -200,10 +200,7 @@ export default function ProjectPage() {
           </div>
           <div className="flex items-center space-x-4">
             <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
-              Share
-            </button>
-            <button className="p-2 text-gray-600 hover:text-gray-900">
-              <span className="text-xl">⭐</span>
+              Start learning
             </button>
           </div>
         </div>
@@ -212,7 +209,9 @@ export default function ProjectPage() {
           <FlashcardSets
             sets={decks}
             selectedSet={selectedDeck}
-            onSelectSet={setSelectedDeck}
+            onSelectSet={(deckId) => {
+              setSelectedDeck(currentDeckId => currentDeckId === deckId ? null : deckId);
+            }}
             onCreateSet={handleCreateSet}
           />
             
