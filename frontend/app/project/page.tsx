@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabase } from "../lib/supabase";
 import { Project } from "../types";
 import CreateProjectModal from "../components/CreateProjectModal";
+import ProjectMenu from "../components/ProjectMenu";
 
 export default function ProjectPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -71,6 +72,43 @@ export default function ProjectPage() {
 
     fetchProjects();
   }, []);
+
+  const handleRenameProject = async (projectId: string, newName: string) => {
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update({ name: newName })
+        .eq('id', projectId);
+
+      if (error) throw error;
+
+      setProjects(projects.map(project => 
+        project.id === projectId ? { ...project, name: newName } : project
+      ));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to rename project');
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId);
+
+      if (error) throw error;
+
+      setProjects(projects.filter(project => project.id !== projectId));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete project');
+    }
+  };
+
+  const handleLearnProject = (projectId: string) => {
+    // TODO: Implement learning functionality
+    console.log('Learning project:', projectId);
+  };
 
   return (
     <>
@@ -207,11 +245,12 @@ export default function ProjectPage() {
                         </div>
                         <p className="text-gray-600">{project.new_cards + project.learning_cards + project.due_cards} cards due today</p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-gray-900 font-medium">
-                          {project.total_cards} cards
-                        </p>
-                      </div>
+                      <ProjectMenu
+                        project={project}
+                        onRename={(newName) => handleRenameProject(project.id, newName)}
+                        onDelete={() => handleDeleteProject(project.id)}
+                        onLearn={() => handleLearnProject(project.id)}
+                      />
                     </div>
 
                     <div className="mt-4 mb-6">
@@ -259,6 +298,10 @@ export default function ProjectPage() {
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                           <span>Due ({project.due_cards})</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <span>Total ({project.total_cards})</span>
                         </div>
                       </div>
                     </div>

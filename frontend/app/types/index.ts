@@ -60,3 +60,10 @@ export interface Project {
   due_cards: number;
   created_at: string;
 }
+
+export interface ProjectMenuProps {
+  project: Project;
+  onRename: (newName: string) => void;
+  onDelete: () => void;
+  onLearn: () => void;
+}
