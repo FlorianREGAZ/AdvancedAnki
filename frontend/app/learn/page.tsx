@@ -66,6 +66,7 @@ export default function LearnPage() {
           learning_cards: 5,
           due_cards: 6,
           total_cards: 30,
+          completed_cards: 17,
         };
 
         setProject(projectWithStats);
@@ -187,6 +188,12 @@ export default function LearnPage() {
         <div className="bg-white p-6 rounded-lg shadow-sm mt-6">
           <h2 className="text-lg font-semibold mb-4">Study Progress</h2>
           <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden mb-3">
+            {project.completed_cards > 0 && (
+              <div 
+                className="h-full bg-purple-400"
+                style={{ width: `${(project.completed_cards / project.total_cards) * 100}%` }}
+              />
+            )}
             {project.new_cards > 0 && (
               <div 
                 className="h-full bg-blue-500"
@@ -208,6 +215,10 @@ export default function LearnPage() {
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
             <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <span>Completed ({project.completed_cards})</span>
+            </div>
+            <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span>New ({project.new_cards})</span>
             </div>
@@ -218,10 +229,6 @@ export default function LearnPage() {
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>Due ({project.due_cards})</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-              <span>Total ({project.total_cards})</span>
             </div>
           </div>
         </div>

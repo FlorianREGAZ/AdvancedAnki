@@ -61,6 +61,7 @@ export interface Project {
   new_cards: number;
   learning_cards: number;
   due_cards: number;
+  completed_cards: number;
   created_at: string;
 }
 
