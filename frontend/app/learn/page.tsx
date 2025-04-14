@@ -2,16 +2,51 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { supabase } from "../../lib/supabase";
-import { Project } from "../../types";
+import { useSearchParams } from "next/navigation";
+import { supabase } from "../lib/supabase";
+import { Project } from "../types";
 
-export default function ProjectDetailsPage() {
-  const params = useParams();
-  const projectId = params.project_id as string;
+export default function LearnPage() {
+  const params = useSearchParams();
+  const projectId = params.get('project_id');
+  console.log("projectId", projectId);
+
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        setIsFlipped(!isFlipped);
+      }
+      
+      if (isFlipped) {
+        switch (e.key) {
+          case '1':
+            // Handle Again
+            console.log('Again');
+            break;
+          case '2':
+            // Handle Hard
+            console.log('Hard');
+            break;
+          case '3':
+            // Handle Good
+            console.log('Good');
+            break;
+          case '4':
+            // Handle Easy
+            console.log('Easy');
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isFlipped]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -82,7 +117,7 @@ export default function ProjectDetailsPage() {
             </div>
             <div className="flex items-center gap-3">
               <button className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
-                Edit Project
+                Browse Project
               </button>
               <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
                 Add Cards
@@ -92,9 +127,64 @@ export default function ProjectDetailsPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-8 py-6">
+      <main className="max-w-7xl mx-auto px-8 py-6 flex flex-col h-[calc(100vh-5rem)]">
+        {/* Cards Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm flex-1 flex flex-col">
+          {/* Question */}
+          <div className="text-2xl font-medium text-center mb-8">
+            What is the capital of France?
+          </div>
+
+          {/* Answer */}
+          <div 
+            className="flex-1 flex items-center justify-center text-center cursor-pointer"
+            onClick={() => setIsFlipped(!isFlipped)}
+          >
+            {!isFlipped ? (
+              <p className="text-gray-500">Click or press Enter to reveal answer</p>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-2xl font-medium">Paris</p>
+                <p className="text-gray-500">The capital and most populous city of France</p>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Actions */}
+          <div className="flex items-center justify-between mt-8">
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+            </button>
+
+            {isFlipped && (
+              <div className="flex gap-4">
+                <button className="px-6 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200">
+                  Again (1)
+                </button>
+                <button className="px-6 py-2 bg-orange-100 text-orange-600 rounded-md hover:bg-orange-200">
+                  Hard (2)
+                </button>
+                <button className="px-6 py-2 bg-green-100 text-green-600 rounded-md hover:bg-green-200">
+                  Good (3)
+                </button>
+                <button className="px-6 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200">
+                  Easy (4)
+                </button>
+              </div>
+            )}
+
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
         {/* Progress Overview */}
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm mt-6">
           <h2 className="text-lg font-semibold mb-4">Study Progress</h2>
           <div className="h-2 bg-gray-200 rounded-full flex overflow-hidden mb-3">
             {project.new_cards > 0 && (
@@ -129,39 +219,10 @@ export default function ProjectDetailsPage() {
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>Due ({project.due_cards})</span>
             </div>
-          </div>
-        </div>
-
-        {/* Cards Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold">Cards</h2>
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search cards..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="M21 21L16.65 16.65"/>
-                </svg>
-              </div>
-              <select className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="all">All Cards</option>
-                <option value="new">New</option>
-                <option value="learning">Learning</option>
-                <option value="due">Due</option>
-              </select>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+              <span>Total ({project.total_cards})</span>
             </div>
-          </div>
-
-          {/* Cards list placeholder - you'll need to implement this based on your data structure */}
-          <div className="space-y-4">
-            <p className="text-gray-500 text-center py-8">
-              No cards yet. Click "Add Cards" to get started.
-            </p>
           </div>
         </div>
       </main>
