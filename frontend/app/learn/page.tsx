@@ -9,7 +9,7 @@ import { Project } from "../types";
 export default function LearnPage() {
   const params = useSearchParams();
   const projectId = params.get('project_id');
-  console.log("projectId", projectId);
+  const deckId = params.get('deck_id');
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,10 +51,29 @@ export default function LearnPage() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
+        let projectIdToFetch = projectId;
+
+        // If only deckId is provided, fetch the project_id from the deck
+        if (!projectId && deckId) {
+          const { data: deckData, error: deckError } = await supabase
+            .from('decks')
+            .select('project_id')
+            .eq('id', deckId)
+            .single();
+
+          if (deckError) throw deckError;
+          projectIdToFetch = deckData.project_id;
+        }
+
+        // If we still don't have a project ID, throw an error
+        if (!projectIdToFetch) {
+          throw new Error('No project ID available');
+        }
+
         const { data, error } = await supabase
           .from('projects')
           .select('*')
-          .eq('id', projectId)
+          .eq('id', projectIdToFetch)
           .single();
 
         if (error) throw error;
@@ -78,7 +97,7 @@ export default function LearnPage() {
     };
 
     fetchProject();
-  }, [projectId]);
+  }, [projectId, deckId]);
 
   if (loading) {
     return (

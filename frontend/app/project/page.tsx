@@ -314,9 +314,12 @@ export default function ProjectPage() {
                     >
                       Browse
                     </Link>
-                    <button className="flex-1 py-2 bg-black text-white rounded-md hover:bg-gray-800 text-center">
+                    <Link 
+                      href={`/learn?project_id=${project.id}`}
+                      className="flex-1 py-2 bg-black text-white rounded-md hover:bg-gray-800 text-center"
+                    >
                       Study Now
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

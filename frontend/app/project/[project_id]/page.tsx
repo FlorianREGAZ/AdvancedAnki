@@ -246,9 +246,12 @@ export default function ProjectPage() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+            <Link 
+              href={selectedDeck ? `/learn?deck_id=${selectedDeck}` : `/learn?project_id=${projectId}`}
+              className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+            >
               Start learning
-            </button>
+            </Link>
           </div>
         </div>
 
